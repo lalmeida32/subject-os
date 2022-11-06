@@ -14,6 +14,13 @@ typedef struct {
   void *args;
 } thread_args_t;
 
+static void *_thread(void *args) {
+  thread_args_t *thr_args = (thread_args_t *) args;
+  void * result = monitor_exec(thr_args->monitor, thr_args->function_id, thr_args->args);
+  free(thr_args);
+  return result;
+}
+
 monitor_t *monitor_init(int n_functions, void *shared_data, void *(**functions)(void *, void *)) {
   monitor_t *m = malloc(sizeof(monitor_t));
   m->n_functions = n_functions;
@@ -44,14 +51,6 @@ void *monitor_exec(monitor_t *m, int function_id, void *args) {
   return r;
 }
 
-
-static void *_thread(void *args) {
-  thread_args_t *thr_args = (thread_args_t *) args;
-  void * result = monitor_exec(thr_args->monitor, thr_args->function_id, thr_args->args);
-  free(thr_args);
-  return result;
-}
-
 pthread_t *monitor_exec_thread(monitor_t *m, int function_id, void *args) {
   pthread_t *thr = malloc(sizeof(pthread_t));
   thread_args_t *thr_args = malloc(sizeof(thread_args_t));
@@ -67,4 +66,8 @@ void *monitor_join_thread(pthread_t *thr) {
   pthread_join(*thr, &result);
   free(thr);
   return result;
+}
+
+pthread_mutex_t *monitor_get_mutex(monitor_t *m) {
+  return m->mutex;
 }

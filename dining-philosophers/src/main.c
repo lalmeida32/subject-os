@@ -1,38 +1,41 @@
 #include "monitor/monitor.h"
+#include "dinphil/dinphil.h"
 #include "util/util.h"
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-void *increment(void *shared_data, void *arg) {
-  (*(int *)shared_data) += (*(int *) arg);
+void *pickup_delay_and_putdown(void *sd, void *args) {
+  dinphil_pickup(sd, args);
   delay(1);
-  printf("%d\n", (*(int *)shared_data));
+  dinphil_putdown(sd, args);
+  free(args);
+
   return NULL;
 }
 
 int main(void) {
-  int *shared_data = malloc(sizeof(int));
-  (*shared_data) = 0;
-  void *(**functions)(void *, void *) = malloc(sizeof(void *(*)(void *, void *)));
-  functions[0] = &increment;
-  monitor_t *m = monitor_init(1, shared_data, functions);
+  void *(**functions)(void *, void *) = malloc(sizeof(void *));
+  functions[0] = &pickup_delay_and_putdown;
 
-  int i1 = 1;
-  pthread_t *thr1 = monitor_exec_thread(m, 0, &i1);
+  dinphil_shared_data_t *shared_data = dinphil_shared_data_init();
+  monitor_t *monitor = monitor_init(1, shared_data, functions);
 
-  int i2 = 2;
-  pthread_t *thr2 = monitor_exec_thread(m, 0, &i2);
+  dinphil_set_monitor(shared_data, monitor);
 
-  int i3 = 3;
-  pthread_t *thr3 = monitor_exec_thread(m, 0, &i3);
+  // Each philosopher request resources 1 time for 1 second
+  pthread_t *threads[5];
 
+  for (int i = 0; i < 5; i++) {
+    int *phil = malloc(sizeof(int));
+    *phil = i;
+    threads[i] = monitor_exec_thread(monitor, 0, phil);
+  }
 
-  monitor_join_thread(thr1);
-  monitor_join_thread(thr2);
-  monitor_join_thread(thr3);
+  for (int i = 0; i < 5; i++) {
+    monitor_join_thread(threads[i]);
+  }
 
-  monitor_destroy(&m, NULL);
+  monitor_destroy(&monitor, NULL);
   
   return 0;
 }
