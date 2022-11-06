@@ -1,6 +1,8 @@
 #ifndef _MONITOR_H_
 #define _MONITOR_H_
 
+#include <pthread.h>
+
 typedef struct monitor monitor_t;
 
 // This function initializes a monitor structure.
@@ -17,5 +19,9 @@ void monitor_destroy(monitor_t **m, void (*shared_data_destroy)(void *));
 // The monitor structure guarantees the mutual exclusion of these functions by
 //  using an internal mutex.
 void *monitor_exec(monitor_t *m, int function_id, void *arg);
+
+pthread_t *monitor_exec_thread(monitor_t *m, int function_id, void *args);
+
+void *monitor_join_thread(pthread_t *thr);
 
 #endif
