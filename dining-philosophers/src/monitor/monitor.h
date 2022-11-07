@@ -20,10 +20,6 @@ void monitor_destroy(monitor_t **m, void (*shared_data_destroy)(void *));
 //  using an internal mutex.
 void *monitor_exec(monitor_t *m, int function_id, void *arg);
 
-pthread_t *monitor_exec_thread(monitor_t *m, int function_id, void *args);
-
-void *monitor_join_thread(pthread_t *thr);
-
 pthread_mutex_t *monitor_get_mutex(monitor_t *m);
 
 #endif
