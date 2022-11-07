@@ -65,7 +65,6 @@ int main(void) {
   }
 
   // Joining threads and freeing memory
-
   for (int i = 0; i < N_THREADS; i++) {
     pthread_join(*threads[i], NULL);
     free(threads[i]);
