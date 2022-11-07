@@ -1,6 +1,7 @@
 #include "monitor.h"
 #include <stdlib.h>
 
+// Basically the same structure used in Java monitors.
 struct monitor {
   int n_functions;
   void *shared_data;
@@ -32,6 +33,7 @@ void monitor_destroy(monitor_t **m, void (*shared_data_destroy)(void *)) {
 }
 
 void *monitor_exec(monitor_t *m, int function_id, void *args) {
+  // Here is a core concept of a monitor: functions mutual exclusion
   pthread_mutex_lock(m->mutex);
   void *r = m->functions[function_id](m->shared_data, args);
   pthread_mutex_unlock(m->mutex);

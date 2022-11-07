@@ -20,6 +20,8 @@ void monitor_destroy(monitor_t **m, void (*shared_data_destroy)(void *));
 //  using an internal mutex.
 void *monitor_exec(monitor_t *m, int function_id, void *arg);
 
+// This function just return the internal mutex from a monitor. This is useful
+//  to wait pthread conditions properly.
 pthread_mutex_t *monitor_get_mutex(monitor_t *m);
 
 #endif
