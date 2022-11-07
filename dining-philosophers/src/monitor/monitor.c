@@ -16,7 +16,7 @@ typedef struct {
 
 static void *_thread(void *args) {
   thread_args_t *thr_args = (thread_args_t *) args;
-  void * result = monitor_exec(thr_args->monitor, thr_args->function_id, thr_args->args);
+  void *result = monitor_exec(thr_args->monitor, thr_args->function_id, thr_args->args);
   free(thr_args);
   return result;
 }
