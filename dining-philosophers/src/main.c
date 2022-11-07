@@ -7,8 +7,7 @@
 
 // Constants
 
-#define N_REQUESTS 2 
-#define N_THREADS 5
+#define N_REQUESTS 2
 #define N_FUNCTIONS 2
 
 // Data
@@ -70,7 +69,7 @@ int main(void) {
     free(threads[i]);
   }
 
-  monitor_destroy(&monitor, NULL);
+  monitor_destroy(&monitor, &dinphil_shared_data_destroy);
   
   return 0;
 }
