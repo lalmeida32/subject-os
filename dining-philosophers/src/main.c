@@ -30,8 +30,8 @@ void *thread(void *args) {
   *mon_args = thr_args->philosopher;
  
   for (int i = 0; i < N_REQUESTS; i++) {
-    monitor_exec(thr_args->monitor, PICKUP, mon_args); 
-    delay(1);
+    monitor_exec(thr_args->monitor, PICKUP, mon_args);
+    delay(random() % 2 + 1);
     monitor_exec(thr_args->monitor, PUTDOWN, mon_args);
   }
 
