@@ -1,4 +1,5 @@
 #include "dinphil.h"
+#include <bits/pthreadtypes.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -12,7 +13,8 @@ typedef enum {
 struct dinphil_shared_data {
   dinphil_state_t state[N_THREADS];
   pthread_cond_t self[N_THREADS];
-  monitor_t *monitor;
+  int counter[N_THREADS];
+  pthread_mutex_t *mutex;
 };
 
 static void _test(dinphil_shared_data_t *shared_data, int i) {
@@ -22,16 +24,20 @@ static void _test(dinphil_shared_data_t *shared_data, int i) {
     
     shared_data->state[i] = EATING;
     printf("Philosopher %d eating\n", i);
-
+    shared_data->counter[i] = 0;
 
     pthread_cond_signal(&shared_data->self[i]);
+  }
+  else if (shared_data->state[i] == HUNGRY) {
+    shared_data->counter[i]++;
+    printf("Philosopher %d tried to eat %d times\n", i, shared_data->counter[i]);
   }
 }
 
 void *dinphil_pickup(void *sd, void *args) {
   dinphil_shared_data_t *shared_data = (dinphil_shared_data_t *) sd;
   int i = *(int *) args;
-  pthread_mutex_t *mutex = monitor_get_mutex(shared_data->monitor);
+  pthread_mutex_t *mutex = shared_data->mutex;
 
   shared_data->state[i] = HUNGRY;
   printf("Philosopher %d hungry\n", i);
@@ -58,7 +64,7 @@ void *dinphil_putdown(void *sd, void *args) {
 
 dinphil_shared_data_t *dinphil_shared_data_init() {
   dinphil_shared_data_t *shared_data = malloc(sizeof(dinphil_shared_data_t));
-  shared_data->monitor = NULL;
+  shared_data->mutex = NULL;
 
   for (int i = 0; i < N_THREADS; i++) {
     shared_data->state[i] = THINKING;
@@ -74,6 +80,6 @@ void dinphil_shared_data_destroy(void *sd) {
   free(shared_data);
 }
 
-void dinphil_set_monitor(dinphil_shared_data_t *shared_data, monitor_t *monitor) {
-  shared_data->monitor = monitor;
+void dinphil_set_mutex(dinphil_shared_data_t *shared_data, pthread_mutex_t *mutex) {
+  shared_data->mutex = mutex;
 }

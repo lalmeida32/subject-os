@@ -7,7 +7,7 @@
 
 // Constants
 
-#define N_REQUESTS 2
+#define N_REQUESTS 50
 #define N_FUNCTIONS 2
 
 // Data
@@ -49,7 +49,7 @@ int main(void) {
 
   dinphil_shared_data_t *shared_data = dinphil_shared_data_init();
   monitor_t *monitor = monitor_init(N_FUNCTIONS, shared_data, functions);
-  dinphil_set_monitor(shared_data, monitor);
+  dinphil_set_mutex(shared_data, monitor_get_mutex(monitor));
 
   // Each philosopher request resources N_REQUESTS times for 1 second each
   pthread_t *threads[N_THREADS];

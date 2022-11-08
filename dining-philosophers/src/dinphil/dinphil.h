@@ -1,9 +1,8 @@
 #ifndef _DINPHIL_H_
 #define _DINPHIL_H_
 
+#include <pthread.h>
 #define N_THREADS 5
-
-#include "../monitor/monitor.h"
 
 typedef struct dinphil_shared_data dinphil_shared_data_t;
 
@@ -19,7 +18,7 @@ void *dinphil_putdown(void *sd, void *args);
 dinphil_shared_data_t *dinphil_shared_data_init();
 
 // This is useful to get access to the mutex of the monitor
-void dinphil_set_monitor(dinphil_shared_data_t *shared_data, monitor_t *monitor);
+void dinphil_set_mutex(dinphil_shared_data_t *shared_data, pthread_mutex_t *mutex);
 
 void dinphil_shared_data_destroy(void *sd);
 
