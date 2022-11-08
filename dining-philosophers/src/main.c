@@ -9,6 +9,7 @@
 
 #define N_REQUESTS 20
 #define N_FUNCTIONS 2
+#define N_COUNTER_MAX 3
 
 // Data
 
@@ -50,6 +51,7 @@ int main(void) {
   dinphil_shared_data_t *shared_data = dinphil_shared_data_init();
   monitor_t *monitor = monitor_init(N_FUNCTIONS, shared_data, functions);
   dinphil_set_mutex(shared_data, monitor_get_mutex(monitor));
+  dinphil_set_counter_max(shared_data, N_COUNTER_MAX);
 
   // Each philosopher request resources N_REQUESTS times for 1 or 2 seconds each
   pthread_t *threads[N_THREADS];
